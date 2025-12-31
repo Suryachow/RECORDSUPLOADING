@@ -1,0 +1,147 @@
+{% extends 'records/base.html' %}
+{% block content %}
+
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0">
+            <i class="fas fa-users"></i> Student Records
+        </h1>
+        <div class="d-flex gap-2">
+            <!-- Search Form -->
+            <form method="GET" action="" class="d-flex gap-2">
+                <input type="text" name="q" class="form-control" placeholder="Search by Name, Email, Mobile..."
+                    value="{{ search_query|default:'' }}" style="width: 250px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                {% if search_query %}
+                <a href="?" class="btn btn-outline-secondary" title="Clear Search"><i class="fas fa-times"></i></a>
+                {% endif %}
+            </form>
+
+            <div class="vr mx-2"></div>
+
+            <!-- Simple Export -->
+            <a href="?export=csv{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-success"
+                title="Download Excel/CSV">
+                <i class="fas fa-file-excel"></i> Export
+            </a>
+
+            <a href="/" class="btn btn-gradient ms-2">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="/form/" class="btn btn-gradient-success">
+                <i class="fas fa-plus"></i> Add
+            </a>
+            <a href="/upload/bulk/" class="btn btn-gradient">
+                <i class="fas fa-upload"></i> Bulk
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            {% if records %}
+            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                <table class="table table-modern mb-0 table-sm" id="records-table">
+                    <thead class="sticky-top" style="top: 0; background: white; z-index: 10;">
+                        <tr>
+                            <th style="width: 60px;"><i class="fas fa-list-ol"></i> S.No</th>
+                            <th style="width: 120px;"><i class="fas fa-user"></i> First Name</th>
+                            <th style="width: 120px;"><i class="fas fa-user"></i> Last Name</th>
+                            <th style="width: 150px;"><i class="fas fa-book"></i> Course</th>
+                            <th style="width: 200px;"><i class="fas fa-envelope"></i> Email</th>
+                            <th style="width: 120px;"><i class="fas fa-phone"></i> Mobile</th>
+                            <th style="width: 120px;"><i class="fas fa-mobile-alt"></i> ISD Code</th>
+                            <th style="width: 150px;"><i class="fas fa-map-marker-alt"></i> State</th>
+                            <th style="width: 150px;"><i class="fas fa-city"></i> City</th>
+                            <th style="width: 150px;"><i class="fas fa-map-pin"></i> Locality</th>
+                            <th style="width: 150px;"><i class="fas fa-location-arrow"></i> Current Locality</th>
+                            <th style="width: 150px;"><i class="fas fa-university"></i> Parent Institute</th>
+                            <th style="width: 150px;"><i class="fas fa-comments"></i> Response Type</th>
+                            <th style="width: 150px;"><i class="fas fa-calendar"></i> Response Date</th>
+                            <th style="width: 150px;"><i class="fas fa-check-circle"></i> Response to Course</th>
+                            <th style="width: 150px;"><i class="fas fa-graduation-cap"></i> Exams Taken</th>
+                            <th style="width: 150px;"><i class="fas fa-briefcase"></i> Work Experience</th>
+                            <th style="width: 150px;"><i class="fas fa-tasks"></i> Course Program</th>
+                            <th style="width: 100px;"><i class="fas fa-ban"></i> NDN List</th>
+                            <th style="width: 150px;"><i class="fas fa-chart-bar"></i> Total Res. Parent</th>
+                            <th style="width: 150px;"><i class="fas fa-chart-line"></i> Total Res. Program</th>
+                            <th style="width: 150px;"><i class="fas fa-chart-pie"></i> Total Res. Course</th>
+                            <th class="text-center" style="width: 100px;"><i class="fas fa-cog"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in records %}
+                        <tr class="fade-row" data-record-id="{{ r.id }}">
+                            <td><strong>#{{ forloop.counter }}</strong></td>
+                            <td>{{ r.first_name|default:"" }}</td>
+                            <td>{{ r.last_name|default:"" }}</td>
+                            <td><span class="badge bg-primary">{{ r.course|default:"" }}</span></td>
+                            <td><small>{{ r.email|default:"N/A" }}</small></td>
+                            <td>{{ r.mobile|default:"N/A" }}</td>
+                            <td>{{ r.isd_code|default:"N/A" }}</td>
+                            <td><small>{{ r.student_state|default:"N/A" }}</small></td>
+                            <td><small>{{ r.student_city|default:"N/A" }}</small></td>
+                            <td><small>{{ r.locality|default:"N/A" }}</small></td>
+                            <td><small>{{ r.current_locality|default:"N/A" }}</small></td>
+                            <td><small>{{ r.parent_institute|default:"N/A" }}</small></td>
+                            <td>{{ r.response_type|default:"N/A" }}</td>
+                            <td><small>{{ r.response_date|default:"N/A" }}</small></td>
+                            <td><small>{{ r.response_to_course|default:"N/A" }}</small></td>
+                            <td>{{ r.exams_taken|default:"N/A" }}</td>
+                            <td>{{ r.student_work_experience|default:"N/A" }}</td>
+                            <td><small>{{ r.response_to_course_program|default:"N/A" }}</small></td>
+                            <td>
+                                <span
+                                    class="badge {% if r.is_in_ndn_list == 'Yes' %}bg-danger{% else %}bg-success{% endif %}">
+                                    {{ r.is_in_ndn_list|default:"No" }}
+                                </span>
+                            </td>
+                            <td>{{ r.total_responses_course_parent|default:"0" }}</td>
+                            <td>{{ r.total_responses_course_program|default:"0" }}</td>
+                            <td>{{ r.total_responses_course|default:"0" }}</td>
+                            <td class="text-center" style="white-space: nowrap;">
+                                <a href="/form/{{ r.id }}/" class="btn btn-gradient-warning btn-sm me-1"
+                                    title="Quick Edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-4 bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-info-circle text-primary"></i>
+                        <strong>Total Records:</strong> <span class="badge bg-primary">{{ records|length }}</span>
+                    </div>
+                    <a href="/" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-5 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-inbox fa-5x text-muted"></i>
+                </div>
+                <h4 class="text-muted mb-3">No Records Found</h4>
+                <p class="text-muted mb-4">Get started by adding your first student record or uploading data in bulk.
+                </p>
+                <a href="/form/" class="btn btn-gradient-success me-2">
+                    <i class="fas fa-plus"></i> Add First Student
+                </a>
+                <a href="/upload/bulk/" class="btn btn-gradient">
+                    <i class="fas fa-upload"></i> Upload Data
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'records/base.html' %}
+{% block content %}
+
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0">
+            <i class="fas fa-cloud-upload-alt"></i> Bulk Upload
+        </h1>
+        <a href="/records/" class="btn btn-gradient">
+            <i class="fas fa-arrow-left"></i> Back to Records
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            <div class="card">
+                <div class="card-header bg-white py-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload text-primary"></i> Upload Student Data
+                    </h5>
+                </div>
+                <div class="card-body p-5 text-center">
+                    {% if error %}
+                    <div class="alert alert-danger mb-4">
+                        <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-4">
+                        <i class="fas fa-file-excel fa-5x text-primary mb-3" style="opacity: 0.7;"></i>
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="fileInput" class="btn btn-gradient-success btn-lg mb-3" style="cursor: pointer;">
+                                <i class="fas fa-folder-open"></i> Choose File
+                            </label>
+                            <input type="file" name="file" id="fileInput" class="d-none" required accept=".xlsx,.xls,.csv,.json">
+                            <div id="fileName" class="text-muted mt-2">
+                                <small>No file selected</small>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-gradient btn-lg" id="uploadBtn" disabled>
+                            <i class="fas fa-cloud-upload-alt"></i> Upload & Import
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="card-footer bg-light py-4">
+                    <h6 class="mb-3"><i class="fas fa-info-circle text-primary"></i> Supported Formats</h6>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="p-3">
+                                <i class="fas fa-file-excel fa-2x text-success mb-2"></i>
+                                <div><small><strong>Excel</strong></small></div>
+                                <div><small class="text-muted">.xlsx, .xls</small></div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3">
+                                <i class="fas fa-file-csv fa-2x text-info mb-2"></i>
+                                <div><small><strong>CSV</strong></small></div>
+                                <div><small class="text-muted">.csv</small></div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3">
+                                <i class="fas fa-file-code fa-2x text-warning mb-2"></i>
+                                <div><small><strong>JSON</strong></small></div>
+                                <div><small class="text-muted">.json</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="fas fa-list text-primary"></i> Required Fields</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled small">
+                                <li class="mb-2"><i class="fas fa-check text-success"></i> First Name</li>
+                                <li class="mb-2"><i class="fas fa-check text-success"></i> Last Name</li>
+                                <li class="mb-2"><i class="fas fa-check text-success"></i> Course</li>
+                                <li class="mb-2"><i class="fas fa-check text-success"></i> Email</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled small">
+                                <li class="mb-2"><i class="fas fa-check text-success"></i> Mobile</li>
+                                <li class="mb-2"><i class="fas fa-check text-success"></i> Response City</li>
+                                <li class="mb-2"><i class="fas fa-check text-success"></i> Student State</li>
+                                <li class="mb-2"><i class="fas fa-info-circle text-info"></i> Other fields optional</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const uploadBtn = document.getElementById('uploadBtn');
+    
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            fileName.innerHTML = `<small><i class="fas fa-file text-primary"></i> <strong>${file.name}</strong> (${(file.size / 1024).toFixed(2)} KB)</small>`;
+            uploadBtn.disabled = false;
+        } else {
+            fileName.innerHTML = '<small>No file selected</small>';
+            uploadBtn.disabled = true;
+        }
+    });
+    
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        uploadBtn.disabled = true;
+    });
+</script>
+
+{% endblock %}
